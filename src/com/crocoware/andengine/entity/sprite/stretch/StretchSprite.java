@@ -10,6 +10,7 @@ import org.andengine.opengl.vbo.attribute.VertexBufferObjectAttributes;
 import org.andengine.opengl.vbo.attribute.VertexBufferObjectAttributesBuilder;
 
 import android.opengl.GLES20;
+import android.util.Log;
 
 /**
  * 
@@ -71,7 +72,35 @@ public class StretchSprite extends Sprite {
 		yc = y3 - ym;
 		xd = x4 - xm;
 		yd = y4 - ym;
+
+		fixPosition();
+
 		onUpdateVertices();
+	}
+
+	/**
+	 * When the orientation of the sprite is badly defined, then the display is
+	 * corrupted. We must then apply a 90° effet
+	 */
+	private void fixPosition() {
+		float ddy,dby,dbx,ddx;
+		ddx=xd-xa;
+		dbx=xb-xa;
+		ddy=yd-ya;
+		dby=yb-ya;
+		if ((ddx+ddy)*(dbx+dby)>0) {
+			float w;
+			w = xa;
+			xa = xb;
+			xb = xc;
+			xc = xd;
+			xd = w;
+			w = ya;
+			ya = yb;
+			yb = yc;
+			yc = yd;
+			yd = w;
+		}
 	}
 
 	public float getStretchX() {
@@ -155,7 +184,7 @@ public class StretchSprite extends Sprite {
 			v2.setXY(dx, dy);
 
 			// Set Quad size
-			final float bay = by - ay;
+			float bay = by - ay;
 			final float dax = dx - ax;
 			final float cbx = cx - bx;
 			final float cdy = cy - dy;
@@ -221,7 +250,6 @@ public class StretchSprite extends Sprite {
 			// Color is not used
 		}
 	}
-	
 
 	private static class Vertex {
 		// Vertex data : position
